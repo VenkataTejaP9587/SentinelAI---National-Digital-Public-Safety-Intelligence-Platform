@@ -10,6 +10,11 @@ This document describes the codebase architecture, database models, integrated A
 
 SentinelAI utilizes an integrated, multi-role monolith structure designed to simulate instant coordination between citizens, local police, financial institutions, telecom carriers, and administrators.
 
+![System Architecture](./architecture.png)
+
+<details>
+<summary>Click to view live Mermaid source code</summary>
+
 ```mermaid
 graph TD
     subgraph frontend ["Frontend Application (Next.js 16)"]
@@ -67,6 +72,7 @@ graph TD
     Net -->|Bolt Driver / 7687| neo4j
     neo4j -.->|If Connection Offline| mock
 ```
+</details>
 
 ---
 
