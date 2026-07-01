@@ -12,32 +12,32 @@ SentinelAI utilizes an integrated, multi-role monolith structure designed to sim
 
 ```mermaid
 graph TD
-    subgraph Frontend Application (Next.js 16)
-        Citizen[Citizen Portal]
-        Police[Police Command Center]
-        Bank[Bank Officer Dashboard]
-        Telecom[Telecom Operator Console]
-        Admin[System Admin Panel]
+    subgraph frontend ["Frontend Application (Next.js 16)"]
+        Citizen["Citizen Portal"]
+        Police["Police Command Center"]
+        Bank["Bank Officer Dashboard"]
+        Telecom["Telecom Operator Console"]
+        Admin["System Admin Panel"]
     end
 
-    subgraph Backend Services (FastAPI)
-        Router[Monolithic API Routers]
-        Auth[JWT Session & Credentials validator]
-        DBConn[SQLAlchemy Engine Context Manager]
+    subgraph backend ["Backend Services (FastAPI)"]
+        Router["Monolithic API Routers"]
+        Auth["JWT Session & Credentials validator"]
+        DBConn["SQLAlchemy Engine Context Manager"]
     end
 
-    subgraph Intelligent AI Pipelines (AI Core)
-        Voice[KAVACH-VOICE: Scam Text/Voice Classifier]
-        Curr[KAVACH-CURRENCY: Counterfeit Bill Analyzer]
-        Net[KAVACH-NET: GNN-powered Fraud Rings mapper]
-        Geo[KAVACH-GEO: Geospatial Crime forecaster]
-        Predict[KAVACH-PREDICT: XGBoost Mule Velocity scorer]
+    subgraph ai ["Intelligent AI Pipelines (AI Core)"]
+        Voice["KAVACH-VOICE: Scam Text/Voice Classifier"]
+        Curr["KAVACH-CURRENCY: Counterfeit Bill Analyzer"]
+        Net["KAVACH-NET: GNN-powered Fraud Rings mapper"]
+        Geo["KAVACH-GEO: Geospatial Crime forecaster"]
+        Predict["KAVACH-PREDICT: XGBoost Mule Velocity scorer"]
     end
 
-    subgraph Database Layer
-        sqlite[(SQLite Engine: kavach.db)]
-        neo4j[(Neo4j Graph Database)]
-        mock[Fallback Neo4j Engine]
+    subgraph db_layer ["Database Layer"]
+        sqlite[("SQLite Engine: kavach.db")]
+        neo4j["Neo4j Graph Database"]
+        mock["Fallback Neo4j Engine"]
     end
 
     %% Routing calls
@@ -52,9 +52,19 @@ graph TD
     Auth --> DBConn
     
     %% AI Model Executions
-    DBConn --> Intelligent AI Pipelines
-    Intelligent AI Pipelines --> sqlite
-    Intelligent AI Pipelines -->|Bolt Driver / 7687| neo4j
+    DBConn --> Voice
+    DBConn --> Curr
+    DBConn --> Net
+    DBConn --> Geo
+    DBConn --> Predict
+    
+    Voice --> sqlite
+    Curr --> sqlite
+    Net --> sqlite
+    Geo --> sqlite
+    Predict --> sqlite
+    
+    Net -->|Bolt Driver / 7687| neo4j
     neo4j -.->|If Connection Offline| mock
 ```
 
