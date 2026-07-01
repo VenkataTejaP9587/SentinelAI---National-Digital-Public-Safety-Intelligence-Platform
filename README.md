@@ -1,6 +1,6 @@
 # 🛡️ SentinelAI – AI Digital Public Safety Intelligence Platform
 
-> **Smart India Hackathon 2024 | Problem Statement: AI for Digital Public Safety**
+> **Problem Statement: AI for Digital Public Safety**
 > Proactive prevention of counterfeit currency, digital arrest scams, and organized fraud networks.
 
 SentinelAI is a production-ready, enterprise-grade digital public safety intelligence platform. This repository contains the consolidated monolithic implementation designed to run **directly on your local host (WITHOUT Docker)**. 
