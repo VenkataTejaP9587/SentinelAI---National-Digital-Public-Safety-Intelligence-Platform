@@ -12,68 +12,6 @@ SentinelAI utilizes an integrated, multi-role monolith structure designed to sim
 
 ![System Architecture](./architecture.png)
 
-<details>
-<summary>Click to view live Mermaid source code</summary>
-
-```mermaid
-graph TD
-    subgraph frontend ["Frontend Application (Next.js 16)"]
-        Citizen["Citizen Portal"]
-        Police["Police Command Center"]
-        Bank["Bank Officer Dashboard"]
-        Telecom["Telecom Operator Console"]
-        Admin["System Admin Panel"]
-    end
-
-    subgraph backend ["Backend Services (FastAPI)"]
-        Router["Monolithic API Routers"]
-        Auth["JWT Session & Credentials validator"]
-        DBConn["SQLAlchemy Engine Context Manager"]
-    end
-
-    subgraph ai ["Intelligent AI Pipelines (AI Core)"]
-        Voice["KAVACH-VOICE: Scam Text/Voice Classifier"]
-        Curr["KAVACH-CURRENCY: Counterfeit Bill Analyzer"]
-        Net["KAVACH-NET: GNN-powered Fraud Rings mapper"]
-        Geo["KAVACH-GEO: Geospatial Crime forecaster"]
-        Predict["KAVACH-PREDICT: XGBoost Mule Velocity scorer"]
-    end
-
-    subgraph db_layer ["Database Layer"]
-        sqlite[("SQLite Engine: kavach.db")]
-        neo4j["Neo4j Graph Database"]
-        mock["Fallback Neo4j Engine"]
-    end
-
-    %% Routing calls
-    Citizen -->|HTTPS API Requests| Router
-    Police -->|HTTPS API Requests| Router
-    Bank -->|HTTPS API Requests| Router
-    Telecom -->|HTTPS API Requests| Router
-    Admin -->|HTTPS API Requests| Router
-
-    %% Backend Context
-    Router --> Auth
-    Auth --> DBConn
-    
-    %% AI Model Executions
-    DBConn --> Voice
-    DBConn --> Curr
-    DBConn --> Net
-    DBConn --> Geo
-    DBConn --> Predict
-    
-    Voice --> sqlite
-    Curr --> sqlite
-    Net --> sqlite
-    Geo --> sqlite
-    Predict --> sqlite
-    
-    Net -->|Bolt Driver / 7687| neo4j
-    neo4j -.->|If Connection Offline| mock
-```
-</details>
-
 ---
 
 ## 📁 Repository Directory Layout
@@ -90,7 +28,8 @@ ET AI/
 │   ├── schema.sql            # Core SQL Schemas (optimized for SQLite & PostgreSQL compatibility)
 │   └── seed_data.py          # Automatic seeding script for demo database records
 ├── docs/
-│   └── ARCHITECTURE.md       # [THIS DOCUMENT] Detailed system architectural guide
+│   ├── detailed_document.md  # Detailed system architectural guide (Markdown)
+│   └── detailed_document.pdf # Detailed system architectural guide (PDF)
 ├── backend/
 │   ├── main.py               # Main FastAPI server entry point (configures CORS & mounts routes)
 │   ├── config.py             # Settings controller reading environment configurations
@@ -103,7 +42,7 @@ ET AI/
 │   │   ├── predictive.py            # XGBoost Transaction risk and emerging campaign analysis
 │   │   └── scam_detector.py         # IndicBERT + RoBERTa voice/text scam classification
 │   ├── routers/              # API router files
-│   │   ├── auth.py, citizen.py, police.py, bank.py, telecom.py, admin.py, search.py
+│   │   └── auth.py, citizen.py, police.py, bank.py, telecom.py, admin.py, search.py
 │   └── schemas/              # Input/Output validation models (Pydantic v2)
 └── frontend/
     ├── package.json          # Next.js scripts & packages
