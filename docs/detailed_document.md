@@ -30,7 +30,7 @@ ET AI/
 ├── docs/
 │   ├── detailed_document.md         # Detailed system architectural guide (Markdown)
 │   ├── detailed_document.pdf        # Detailed system architectural guide (PDF)
-│   └── sentinelai_presentation.pptx # Project presentation slide deck (PowerPoint PPTX)
+│   └── detailed_presentation.pptx   # Project presentation slide deck (PowerPoint PPTX)
 ├── backend/
 │   ├── main.py               # Main FastAPI server entry point (configures CORS & mounts routes)
 │   ├── config.py             # Settings controller reading environment configurations
