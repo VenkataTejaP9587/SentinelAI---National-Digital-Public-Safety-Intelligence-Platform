@@ -1,0 +1,44 @@
+# Node dependency directories
+node_modules/
+/frontend/node_modules/
+/sentinelai-web/node_modules/
+
+# Next.js build output
+.next/
+/frontend/.next/
+/sentinelai-web/.next/
+
+# Python virtual environment
+venv/
+.venv/
+env/
+
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Local configuration files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database file
+kavach.db
+
+# Uploads and temporary assets
+uploads/
+frontend_temp/
+
+# IDE files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp

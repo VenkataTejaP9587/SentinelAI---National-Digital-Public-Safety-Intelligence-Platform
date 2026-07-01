@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SentinelAI — National Digital Public Safety Intelligence Platform</title>
+<meta name="description" content="India's first AI-powered Digital Public Safety Intelligence Platform defeating counterfeiting, fraud & digital arrest scams."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+:root{
+  --bg-primary:#070b14;
+  --bg-secondary:#0d1526;
+  --bg-card:#111827;
+  --bg-card2:#0f1f35;
+  --accent-cyan:#00d4ff;
+  --accent-purple:#8b5cf6;
+  --accent-blue:#3b82f6;
+  --accent-green:#10b981;
+  --accent-red:#ef4444;
+  --accent-orange:#f59e0b;
+  --text-primary:#f1f5f9;
+  --text-secondary:#94a3b8;
+  --text-muted:#64748b;
+  --border:#1e2d45;
+  --glow-cyan:0 0 30px rgba(0,212,255,0.2);
+  --glow-purple:0 0 30px rgba(139,92,246,0.2);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg-primary);
+  color:var(--text-primary);
+  overflow-x:hidden;
+}
+
+/* ─── SCROLLBAR ─────────────────────────────── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg-secondary)}
+::-webkit-scrollbar-thumb{background:var(--accent-cyan);border-radius:3px}
+
+/* ─── NAVBAR ──────────────────────────────────── */
+.navbar{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 2rem;
+  background:rgba(7,11,20,0.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(0,212,255,0.1);
+}
+.nav-logo{
+  display:flex;align-items:center;gap:.75rem;
+  font-size:1.4rem;font-weight:800;letter-spacing:-0.5px;
+}
+.nav-logo-icon{
+  width:40px;height:40px;border-radius:10px;
+  background:linear-gradient(135deg,var(--accent-cyan),var(--accent-purple));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;
+}
+.nav-logo span{background:linear-gradient(90deg,var(--accent-cyan),var(--accent-purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;align-items:center;gap:2rem}
+.nav-links a{color:var(--text-secondary);text-decoration:none;font-size:.9rem;transition:.2s}
+.nav-links a:hover{color:var(--accent-cyan)}
+.nav-cta{
+  display:flex;gap:.75rem;
+}
+.btn-outline{
+  padding:.5rem 1.25rem;border:1px solid var(--accent-cyan);
+  background:transparent;color:var(--accent-cyan);border-radius:8px;
+  cursor:pointer;font-size:.85rem;font-family:'Inter',sans-serif;transition:.2s;
+}
+.btn-outline:hover{background:rgba(0,212,255,0.1)}
+.btn-primary{
+  padding:.5rem 1.25rem;
+  background:linear-gradient(135deg,var(--accent-cyan),var(--accent-blue));
+  border:none;color:#fff;border-radius:8px;
+  cursor:pointer;font-size:.85rem;font-family:'Inter',sans-serif;font-weight:600;transition:.2s;
+}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+
+/* ─── HERO ─────────────────────────────────────── */
+.hero{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  padding:8rem 2rem 4rem;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%,rgba(0,212,255,0.08) 0%,transparent 70%),
+    radial-gradient(ellipse 60% 40% at 90% 50%,rgba(139,92,246,0.06) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 50% at 0% 80%,rgba(59,130,246,0.05) 0%,transparent 60%);
+}
+.grid-overlay{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+.hero-content{
+  text-align:center;max-width:900px;position:relative;z-index:1;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.4rem 1rem;border:1px solid rgba(0,212,255,0.3);
+  background:rgba(0,212,255,0.08);border-radius:100px;
+  font-size:.8rem;color:var(--accent-cyan);margin-bottom:1.5rem;
+  animation:fadeInDown .6s ease;
+}
+.hero-badge .dot{width:6px;height:6px;background:var(--accent-green);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.hero h1{
+  font-size:clamp(2.5rem,6vw,4.5rem);
+  font-weight:900;line-height:1.1;
+  letter-spacing:-2px;
+  margin-bottom:1.5rem;
+  animation:fadeInUp .8s ease .1s both;
+}
+.hero h1 .highlight{
+  background:linear-gradient(90deg,var(--accent-cyan),var(--accent-purple),var(--accent-blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.hero-sub{
+  font-size:1.15rem;color:var(--text-secondary);
+  max-width:650px;margin:0 auto 2.5rem;line-height:1.7;
+  animation:fadeInUp .8s ease .2s both;
+}
+.hero-cta{
+  display:flex;align-items:center;justify-content:center;gap:1rem;
+  flex-wrap:wrap;
+  animation:fadeInUp .8s ease .3s both;
+}
+.btn-hero{
+  padding:.85rem 2rem;font-size:1rem;font-weight:600;
+  border-radius:12px;cursor:pointer;font-family:'Inter',sans-serif;
+  transition:.2s;border:none;
+}
+.btn-hero-primary{
+  background:linear-gradient(135deg,var(--accent-cyan),var(--accent-blue));
+  color:#fff;
+}
+.btn-hero-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,212,255,0.4)}
+.btn-hero-secondary{
+  background:transparent;border:1px solid var(--border);
+  color:var(--text-primary);
+}
+.btn-hero-secondary:hover{border-color:var(--accent-cyan);color:var(--accent-cyan)}
+
+/* ─── STAT BAR ─────────────────────────────────── */
+.stat-bar{
+  display:flex;justify-content:center;gap:0;
+  flex-wrap:wrap;
+  margin-top:4rem;
+  animation:fadeInUp .8s ease .4s both;
+}
+.stat-item{
+  padding:1.5rem 2.5rem;
+  text-align:center;
+  border:1px solid var(--border);
+  background:rgba(17,24,39,0.6);
+  backdrop-filter:blur(10px);
+  position:relative;
+}
+.stat-item:first-child{border-radius:16px 0 0 16px}
+.stat-item:last-child{border-radius:0 16px 16px 0}
+.stat-number{
+  font-size:2rem;font-weight:800;
+  background:linear-gradient(90deg,var(--accent-cyan),var(--accent-purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.stat-label{font-size:.8rem;color:var(--text-muted);margin-top:.25rem}
+.stat-delta{font-size:.75rem;color:var(--accent-red);margin-top:.2rem}
+
+/* ─── SECTION BASE ──────────────────────────────── */
+section{padding:5rem 2rem}
+.section-header{text-align:center;margin-bottom:3rem}
+.section-tag{
+  display:inline-block;
+  padding:.25rem .75rem;
+  background:rgba(139,92,246,0.15);
+  border:1px solid rgba(139,92,246,0.3);
+  border-radius:100px;font-size:.75rem;
+  color:var(--accent-purple);letter-spacing:.1em;
+  text-transform:uppercase;margin-bottom:1rem;
+}
+.section-header h2{
+  font-size:clamp(1.8rem,4vw,3rem);font-weight:800;
+  letter-spacing:-1px;margin-bottom:.75rem;
+}
+.section-header p{color:var(--text-secondary);max-width:600px;margin:0 auto;line-height:1.7}
+
+/* ─── MODULES GRID ──────────────────────────────── */
+.modules-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:1.5rem;max-width:1200px;margin:0 auto;
+}
+.module-card{
+  background:linear-gradient(135deg,rgba(17,24,39,0.9),rgba(13,21,38,0.9));
+  border:1px solid var(--border);border-radius:16px;
+  padding:1.75rem;
+  transition:.3s;cursor:pointer;position:relative;overflow:hidden;
+}
+.module-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent,rgba(0,212,255,0.03));
+  opacity:0;transition:.3s;
+}
+.module-card:hover{border-color:rgba(0,212,255,0.4);transform:translateY(-4px);box-shadow:var(--glow-cyan)}
+.module-card:hover::before{opacity:1}
+.module-icon{
+  width:48px;height:48px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;margin-bottom:1rem;
+}
+.module-card h3{font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
+.module-card p{font-size:.875rem;color:var(--text-secondary);line-height:1.6}
+.module-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1rem}
+.module-tag{
+  padding:.2rem .6rem;border-radius:6px;font-size:.7rem;
+  background:rgba(0,212,255,0.1);color:var(--accent-cyan);border:1px solid rgba(0,212,255,0.2);
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* ─── DASHBOARD PREVIEW ─────────────────────────── */
+.dashboard-preview{
+  max-width:1200px;margin:0 auto;
+}
+.tab-bar{
+  display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;
+}
+.tab-btn{
+  padding:.6rem 1.25rem;border-radius:8px;cursor:pointer;
+  font-size:.85rem;font-family:'Inter',sans-serif;font-weight:500;
+  border:1px solid var(--border);background:transparent;
+  color:var(--text-secondary);transition:.2s;
+}
+.tab-btn.active{
+  background:rgba(0,212,255,0.15);
+  border-color:var(--accent-cyan);color:var(--accent-cyan);
+}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* ─── COMMAND CENTER ─────────────────────────────── */
+.cc-layout{
+  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;
+  gap:1rem;margin-bottom:1.5rem;
+}
+.cc-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:1.25rem;
+  transition:.2s;
+}
+.cc-card:hover{border-color:rgba(0,212,255,0.3)}
+.cc-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem}
+.cc-label{font-size:.8rem;color:var(--text-muted)}
+.cc-icon{font-size:1.4rem}
+.cc-value{font-size:1.75rem;font-weight:800}
+.cc-delta{font-size:.75rem;margin-top:.2rem}
+.cc-delta.up{color:var(--accent-red)}
+.cc-delta.down{color:var(--accent-green)}
+
+.cc-grid2{display:grid;grid-template-columns:1.5fr 1fr;gap:1rem}
+.cc-chart-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:1.25rem;
+}
+.cc-chart-title{font-size:.9rem;font-weight:600;margin-bottom:1rem;color:var(--text-secondary)}
+
+/* ─── ALERT FEED ─────────────────────────────────── */
+.alert-feed{display:flex;flex-direction:column;gap:.5rem}
+.alert-item{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.75rem;border-radius:8px;
+  background:rgba(255,255,255,0.03);
+  border-left:3px solid;
+  font-size:.8rem;
+}
+.alert-item.critical{border-color:var(--accent-red)}
+.alert-item.high{border-color:var(--accent-orange)}
+.alert-item.medium{border-color:var(--accent-purple)}
+.alert-item.low{border-color:var(--accent-green)}
+.alert-badge{
+  padding:.15rem .5rem;border-radius:4px;font-size:.7rem;font-weight:600;white-space:nowrap;
+}
+.alert-badge.critical{background:rgba(239,68,68,.2);color:var(--accent-red)}
+.alert-badge.high{background:rgba(245,158,11,.2);color:var(--accent-orange)}
+.alert-badge.medium{background:rgba(139,92,246,.2);color:var(--accent-purple)}
+.alert-badge.low{background:rgba(16,185,129,.2);color:var(--accent-green)}
+.alert-time{color:var(--text-muted);font-size:.72rem;margin-left:auto;white-space:nowrap}
+
+/* ─── CITIZEN DASHBOARD ──────────────────────────── */
+.citizen-grid{
+  display:grid;grid-template-columns:1fr 1.5fr;gap:1.5rem;
+}
+.verify-panel{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:16px;padding:1.5rem;
+}
+.verify-panel h3{font-size:1rem;font-weight:700;margin-bottom:1.25rem}
+.input-group{margin-bottom:1rem}
+.input-group label{display:block;font-size:.8rem;color:var(--text-secondary);margin-bottom:.4rem}
+.sentinel-input{
+  width:100%;padding:.65rem 1rem;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);border-radius:8px;
+  color:var(--text-primary);font-size:.875rem;font-family:'Inter',sans-serif;
+  transition:.2s;outline:none;
+}
+.sentinel-input:focus{border-color:var(--accent-cyan);background:rgba(0,212,255,0.05)}
+.type-pills{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem}
+.type-pill{
+  padding:.3rem .75rem;border-radius:20px;font-size:.75rem;cursor:pointer;
+  border:1px solid var(--border);background:transparent;
+  color:var(--text-secondary);font-family:'Inter',sans-serif;transition:.2s;
+}
+.type-pill.selected{border-color:var(--accent-cyan);background:rgba(0,212,255,.1);color:var(--accent-cyan)}
+.result-panel{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:16px;padding:1.5rem;
+}
+.risk-meter{
+  position:relative;margin:1.5rem 0;
+}
+.risk-arc{
+  width:180px;height:90px;margin:0 auto;position:relative;
+}
+.risk-value{
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  font-size:2.5rem;font-weight:900;
+  background:linear-gradient(90deg,var(--accent-red),var(--accent-orange));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.risk-label{text-align:center;font-size:.8rem;color:var(--text-muted);margin-top:.25rem}
+.feature-row{display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.feature-row:last-child{border:none}
+.feature-name{font-size:.825rem;color:var(--text-secondary)}
+.feature-score{font-size:.825rem;font-weight:600;font-family:'JetBrains Mono',monospace}
+.score-bar{width:80px;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;margin-left:.5rem}
+.score-fill{height:100%;border-radius:2px}
+.score-good{background:var(--accent-green)}
+.score-bad{background:var(--accent-red)}
+.score-warn{background:var(--accent-orange)}
+
+/* ─── MAP ────────────────────────────────────────── */
+#crime-map{height:380px;border-radius:12px;border:1px solid var(--border)}
+.leaflet-container{background:#070b14 !important}
+
+/* ─── GRAPH VIZ ──────────────────────────────────── */
+.graph-container{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:16px;padding:1.5rem;
+  min-height:400px;position:relative;overflow:hidden;
+}
+#fraud-graph-canvas{width:100%;height:360px}
+.node{cursor:pointer}
+
+/* ─── TECH STACK ─────────────────────────────────── */
+.tech-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:1rem;max-width:1200px;margin:0 auto;
+}
+.tech-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:1.25rem;text-align:center;
+  transition:.2s;
+}
+.tech-card:hover{border-color:rgba(139,92,246,0.5);transform:translateY(-2px);box-shadow:var(--glow-purple)}
+.tech-icon{font-size:2rem;margin-bottom:.5rem}
+.tech-name{font-size:.9rem;font-weight:600}
+.tech-type{font-size:.75rem;color:var(--text-muted);margin-top:.2rem}
+
+/* ─── WORKFLOW ───────────────────────────────────── */
+.workflow{
+  display:flex;align-items:flex-start;justify-content:center;
+  gap:0;max-width:1000px;margin:0 auto;flex-wrap:wrap;
+}
+.wf-step{
+  display:flex;flex-direction:column;align-items:center;
+  gap:.75rem;flex:1;min-width:120px;position:relative;
+}
+.wf-step:not(:last-child)::after{
+  content:'→';position:absolute;right:-20px;top:18px;
+  font-size:1.2rem;color:var(--accent-cyan);
+}
+.wf-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(0,212,255,0.2),rgba(139,92,246,0.2));
+  border:1px solid rgba(0,212,255,0.3);
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+}
+.wf-label{font-size:.78rem;color:var(--text-secondary);text-align:center;line-height:1.4}
+
+/* ─── METRICS ─────────────────────────────────────── */
+.metrics-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:1rem;max-width:1200px;margin:0 auto;
+}
+.metric-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:1.5rem;
+  display:flex;align-items:center;gap:1.25rem;
+}
+.metric-icon{
+  width:52px;height:52px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;
+}
+.metric-icon.cyan{background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.2)}
+.metric-icon.purple{background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.2)}
+.metric-icon.green{background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.2)}
+.metric-icon.red{background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.2)}
+.metric-icon.orange{background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.2)}
+.metric-value{font-size:1.6rem;font-weight:800;line-height:1}
+.metric-name{font-size:.8rem;color:var(--text-muted);margin-top:.3rem}
+.metric-sub{font-size:.75rem;color:var(--accent-green);margin-top:.2rem}
+
+/* ─── CHATBOT ─────────────────────────────────────── */
+.chatbot-wrapper{
+  max-width:700px;margin:0 auto;
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:20px;overflow:hidden;
+}
+.chatbot-header{
+  padding:1rem 1.5rem;
+  background:linear-gradient(90deg,rgba(0,212,255,0.1),rgba(139,92,246,0.1));
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:.75rem;
+}
+.bot-avatar{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--accent-cyan),var(--accent-purple));
+  display:flex;align-items:center;justify-content:center;font-size:1rem;
+}
+.chat-messages{
+  height:320px;overflow-y:auto;padding:1.25rem;
+  display:flex;flex-direction:column;gap:.75rem;
+}
+.chat-msg{display:flex;gap:.75rem;max-width:90%}
+.chat-msg.bot{align-self:flex-start}
+.chat-msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg-bubble{
+  padding:.75rem 1rem;border-radius:12px;font-size:.85rem;line-height:1.5;
+}
+.bot .msg-bubble{background:rgba(255,255,255,0.06);border:1px solid var(--border)}
+.user .msg-bubble{background:linear-gradient(135deg,rgba(0,212,255,0.2),rgba(139,92,246,0.2));border:1px solid rgba(0,212,255,0.3)}
+.lang-selector{
+  display:flex;gap:.4rem;padding:.75rem 1.25rem;border-top:1px solid var(--border);
+  flex-wrap:wrap;
+}
+.lang-pill{
+  padding:.2rem .6rem;border-radius:20px;font-size:.7rem;cursor:pointer;
+  border:1px solid var(--border);background:transparent;
+  color:var(--text-muted);font-family:'Inter',sans-serif;transition:.2s;
+}
+.lang-pill.active{border-color:var(--accent-cyan);color:var(--accent-cyan);background:rgba(0,212,255,.08)}
+.chat-input-row{
+  display:flex;gap:.5rem;padding:.75rem 1rem;border-top:1px solid var(--border);
+}
+.chat-input{
+  flex:1;padding:.6rem .9rem;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  border-radius:8px;color:var(--text-primary);font-family:'Inter',sans-serif;font-size:.85rem;outline:none;
+}
+.chat-send{
+  padding:.6rem 1rem;
+  background:linear-gradient(135deg,var(--accent-cyan),var(--accent-blue));
+  border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:.9rem;transition:.2s;
+}
+.chat-send:hover{opacity:.85}
+
+/* ─── FOOTER ─────────────────────────────────────── */
+footer{
+  padding:3rem 2rem;
+  border-top:1px solid var(--border);
+  text-align:center;
+  background:rgba(13,21,38,0.5);
+}
+.footer-logo{font-size:1.5rem;font-weight:800;margin-bottom:.5rem}
+.footer-logo span{background:linear-gradient(90deg,var(--accent-cyan),var(--accent-purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.footer-sub{font-size:.85rem;color:var(--text-muted);margin-bottom:1.5rem}
+.footer-links{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.footer-links a{color:var(--text-secondary);text-decoration:none;font-size:.85rem;transition:.2s}
+.footer-links a:hover{color:var(--accent-cyan)}
+.footer-copy{font-size:.75rem;color:var(--text-muted)}
+.sos-strip{
+  background:linear-gradient(90deg,rgba(239,68,68,0.15),rgba(245,158,11,0.15));
+  border:1px solid rgba(239,68,68,0.3);border-radius:8px;
+  padding:.75rem 1.5rem;margin-bottom:1.5rem;
+  font-size:.875rem;color:var(--text-secondary);
+}
+.sos-strip strong{color:var(--accent-red)}
+
+/* ─── MODAL ─────────────────────────────────────── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.8);
+  backdrop-filter:blur(8px);z-index:2000;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:.2s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-box{
+  background:var(--bg-secondary);border:1px solid var(--border);
+  border-radius:20px;padding:2rem;width:100%;max-width:420px;
+  transform:translateY(20px);transition:.2s;
+}
+.modal-overlay.open .modal-box{transform:translateY(0)}
+.modal-title{font-size:1.3rem;font-weight:800;margin-bottom:.25rem}
+.modal-sub{font-size:.85rem;color:var(--text-muted);margin-bottom:1.5rem}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1.25rem}
+.role-card{
+  padding:.85rem;border:1px solid var(--border);border-radius:10px;
+  cursor:pointer;text-align:center;transition:.2s;background:transparent;color:var(--text-primary);font-family:'Inter',sans-serif;
+}
+.role-card:hover,.role-card.selected{border-color:var(--accent-cyan);background:rgba(0,212,255,.08)}
+.role-card .r-icon{font-size:1.4rem;display:block;margin-bottom:.3rem}
+.role-card .r-name{font-size:.8rem;font-weight:600}
+.modal-close{
+  position:absolute;top:1rem;right:1rem;
+  background:transparent;border:none;color:var(--text-muted);
+  font-size:1.25rem;cursor:pointer;padding:.25rem;
+}
+.modal-box{position:relative}
+
+/* ─── ANIMATED COUNTER ───────────────────────────── */
+@keyframes countUp{from{opacity:0}to{opacity:1}}
+.animated-stat{animation:countUp .5s ease}
+
+/* ─── RESPONSIVE ─────────────────────────────────── */
+@media(max-width:900px){
+  .cc-layout{grid-template-columns:1fr 1fr}
+  .cc-grid2{grid-template-columns:1fr}
+  .citizen-grid{grid-template-columns:1fr}
+  .wf-step:not(:last-child)::after{display:none}
+}
+@media(max-width:600px){
+  .navbar{padding:.75rem 1rem}
+  .nav-links{display:none}
+  .stat-item{padding:1rem 1.5rem}
+  .cc-layout{grid-template-columns:1fr 1fr}
+  .hero h1{font-size:2rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ NAVBAR ═══════════════════ -->
+<nav class="navbar">
+  <div class="nav-logo">
+    <div class="nav-logo-icon">🛡️</div>
+    <span>Sentinel</span>AI
+  </div>
+  <div class="nav-links">
+    <a href="#features">Modules</a>
+    <a href="#dashboard">Dashboards</a>
+    <a href="#workflow">How It Works</a>
+    <a href="#metrics">Performance</a>
+    <a href="#chatbot">AI Assistant</a>
+  </div>
+  <div class="nav-cta">
+    <button class="btn-outline" onclick="openModal()">Sign In</button>
+    <button class="btn-primary" onclick="openModal()">Get Access</button>
+  </div>
+</nav>
+
+<!-- ═══════════════════ HERO ══════════════════════ -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="grid-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Live — Smart India Hackathon 2024 · MHA / I4C
+    </div>
+    <h1>
+      India's<br/>
+      <span class="highlight">AI-Powered Digital</span><br/>
+      Public Safety Platform
+    </h1>
+    <p class="hero-sub">
+      SentinelAI defeats digital arrest scams, counterfeit currency, and fraud rings in real-time — connecting 1.4 billion citizens with AI-powered protection before money is lost.
+    </p>
+    <div class="hero-cta">
+      <button class="btn-hero btn-hero-primary" onclick="openModal()">
+        🚀 Access Platform
+      </button>
+      <button class="btn-hero btn-hero-secondary" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})">
+        👁 View Live Demo
+      </button>
+    </div>
+
+    <div class="stat-bar">
+      <div class="stat-item">
+        <div class="stat-number" id="c1">0</div>
+        <div class="stat-label">Cybercrime Complaints (2023)</div>
+        <div class="stat-delta">↑ 61% YoY</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="c2">₹0</div>
+        <div class="stat-label">Digital Arrest Losses</div>
+        <div class="stat-delta">H1 2024 alone</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="c3">0</div>
+        <div class="stat-label">Active Fraud Rings</div>
+        <div class="stat-delta">Estimated</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="c4">0s</div>
+        <div class="stat-label">AI Alert Latency</div>
+        <div class="stat-delta">Real-time</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ AI MODULES ════════════════ -->
+<section id="features" style="background:rgba(13,21,38,0.5)">
+  <div class="section-header">
+    <div class="section-tag">Seven Integrated AI Modules</div>
+    <h2>Complete <span style="color:var(--accent-cyan)">Digital Safety</span> Coverage</h2>
+    <p>Every threat vector — voice, image, graph, geospatial, NLP — monitored by a dedicated AI module, orchestrated by an autonomous agentic layer.</p>
+  </div>
+  <div class="modules-grid">
+    <div class="module-card">
+      <div class="module-icon" style="background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.2)">🔊</div>
+      <h3>KAVACH-VOICE · Scam Detection</h3>
+      <p>Real-time analysis of phone calls, WhatsApp messages, SMS, and emails for digital arrest scams. Deepfake voice detection included.</p>
+      <div class="module-tags">
+        <span class="module-tag">IndicBERT</span>
+        <span class="module-tag">Whisper v3</span>
+        <span class="module-tag">Wav2Vec2</span>
+        <span class="module-tag">ECAPA-TDNN</span>
+      </div>
+    </div>
+    <div class="module-card">
+      <div class="module-icon" style="background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.2)">💰</div>
+      <h3>KAVACH-CURRENCY · Counterfeit Detection</h3>
+      <p>7-feature parallel analysis of Indian currency notes via mobile camera. Security thread, watermark, UV simulation, serial validation.</p>
+      <div class="module-tags">
+        <span class="module-tag">YOLOv11</span>
+        <span class="module-tag">EfficientNet-B4</span>
+        <span class="module-tag">ViT-B/16</span>
+        <span class="module-tag">Grad-CAM</span>
+      </div>
+    </div>
+    <div class="module-card">
+      <div class="module-icon" style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.2)">🕸️</div>
+      <h3>KAVACH-NET · Fraud Network Intelligence</h3>
+      <p>Graph Neural Networks on Neo4j expose fraud rings across phone numbers, bank accounts, UPI IDs, and IMEI numbers. Court-admissible GNN reports.</p>
+      <div class="module-tags">
+        <span class="module-tag">GraphSAGE</span>
+        <span class="module-tag">GAT</span>
+        <span class="module-tag">Neo4j</span>
+        <span class="module-tag">GNNExplainer</span>
+      </div>
+    </div>
+    <div class="module-card">
+      <div class="module-icon" style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.2)">🗺️</div>
+      <h3>KAVACH-GEO · Geospatial Crime Intelligence</h3>
+      <p>Real-time crime heatmaps, AI-predicted hotspots, and police patrol recommendations using Uber H3 hexagonal indexing.</p>
+      <div class="module-tags">
+        <span class="module-tag">Prophet</span>
+        <span class="module-tag">ST-GCN</span>
+        <span class="module-tag">DBSCAN</span>
+        <span class="module-tag">PostGIS</span>
+      </div>
+    </div>
+    <div class="module-card">
+      <div class="module-icon" style="background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.2)">🤖</div>
+      <h3>KAVACH-ASSIST · Multilingual AI Assistant</h3>
+      <p>12 Indian languages. WhatsApp, IVR, web, and mobile app channels. Verifies contacts, guides victims, auto-fills FIRs.</p>
+      <div class="module-tags">
+        <span class="module-tag">Llama 3.1</span>
+        <span class="module-tag">IndicTrans2</span>
+        <span class="module-tag">12 Languages</span>
+        <span class="module-tag">IVR</span>
+      </div>
+    </div>
+    <div class="module-card">
+      <div class="module-icon" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.2)">🔮</div>
+      <h3>KAVACH-PREDICT · Predictive AI Engine</h3>
+      <p>Predicts emerging scam campaigns 48–72 hours before peak. Transaction fraud probability. Coordinated attack detection.</p>
+      <div class="module-tags">
+        <span class="module-tag">XGBoost</span>
+        <span class="module-tag">LightGBM</span>
+        <span class="module-tag">CatBoost</span>
+        <span class="module-tag">Isolation Forest</span>
+      </div>
+    </div>
+    <div class="module-card" style="grid-column:span 1">
+      <div class="module-icon" style="background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.2)">🧠</div>
+      <h3>KAVACH-AGENT · Autonomous AI Orchestrator</h3>
+      <p>LangGraph multi-agent system that autonomously collects evidence, synthesizes risk, dispatches bank/telecom alerts, and generates intelligence briefs — all in under 5 minutes.</p>
+      <div class="module-tags">
+        <span class="module-tag">LangGraph</span>
+        <span class="module-tag">Llama 3.1 70B</span>
+        <span class="module-tag">Gemma</span>
+        <span class="module-tag">LangChain</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ DASHBOARDS ════════════════ -->
+<section id="dashboard">
+  <div class="section-header">
+    <div class="section-tag">Live Platform Preview</div>
+    <h2>Role-Based <span style="color:var(--accent-purple)">Intelligence Dashboards</span></h2>
+    <p>Every stakeholder — citizen, police, bank, telecom, admin — gets a purpose-built AI-powered interface.</p>
+  </div>
+  <div class="dashboard-preview">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('police',this)">👮 Police Command Center</button>
+      <button class="tab-btn" onclick="switchTab('citizen',this)">👥 Citizen Portal</button>
+      <button class="tab-btn" onclick="switchTab('map',this)">🗺️ Crime Intelligence Map</button>
+      <button class="tab-btn" onclick="switchTab('bank',this)">🏦 Bank Dashboard</button>
+      <button class="tab-btn" onclick="switchTab('graph',this)">🕸️ Fraud Network Graph</button>
+    </div>
+
+    <!-- POLICE COMMAND CENTER -->
+    <div class="tab-content active" id="tab-police">
+      <div class="cc-layout">
+        <div class="cc-card">
+          <div class="cc-card-top"><span class="cc-label">Active Cases</span><span class="cc-icon">📋</span></div>
+          <div class="cc-value" style="color:var(--accent-cyan)">1,247</div>
+          <div class="cc-delta up">↑ 23 in last hour</div>
+        </div>
+        <div class="cc-card">
+          <div class="cc-card-top"><span class="cc-label">Critical Alerts</span><span class="cc-icon">🚨</span></div>
+          <div class="cc-value" style="color:var(--accent-red)">47</div>
+          <div class="cc-delta up">Needs immediate action</div>
+        </div>
+        <div class="cc-card">
+          <div class="cc-card-top"><span class="cc-label">Fraud Rings Found</span><span class="cc-icon">🕸️</span></div>
+          <div class="cc-value" style="color:var(--accent-purple)">312</div>
+          <div class="cc-delta down">↓ 8 dismantled today</div>
+        </div>
+        <div class="cc-card">
+          <div class="cc-card-top"><span class="cc-label">Prevented Today</span><span class="cc-icon">💸</span></div>
+          <div class="cc-value" style="color:var(--accent-green)">₹2.4Cr</div>
+          <div class="cc-delta down">↑ 18% vs yesterday</div>
+        </div>
+      </div>
+      <div class="cc-grid2">
+        <div class="cc-chart-card">
+          <div class="cc-chart-title">Fraud Detection Trend (Last 7 Days)</div>
+          <canvas id="fraudTrendChart" height="160"></canvas>
+        </div>
+        <div class="cc-chart-card">
+          <div class="cc-chart-title">🔴 Live Alert Feed</div>
+          <div class="alert-feed">
+            <div class="alert-item critical">
+              <span class="alert-badge critical">CRITICAL</span>
+              <span>Digital Arrest Ring — 47 nodes — MH/GJ</span>
+              <span class="alert-time">2m ago</span>
+            </div>
+            <div class="alert-item high">
+              <span class="alert-badge high">HIGH</span>
+              <span>Counterfeit ₹500 seized — Mumbai Central</span>
+              <span class="alert-time">7m ago</span>
+            </div>
+            <div class="alert-item high">
+              <span class="alert-badge high">HIGH</span>
+              <span>Investment scam cluster — ₹84L at risk</span>
+              <span class="alert-time">15m ago</span>
+            </div>
+            <div class="alert-item medium">
+              <span class="alert-badge medium">MED</span>
+              <span>Phishing URL cluster — 12 new domains</span>
+              <span class="alert-time">22m ago</span>
+            </div>
+            <div class="alert-item medium">
+              <span class="alert-badge medium">MED</span>
+              <span>SIM swapping pattern — Rajasthan circle</span>
+              <span class="alert-time">31m ago</span>
+            </div>
+            <div class="alert-item low">
+              <span class="alert-badge low">LOW</span>
+              <span>Lottery scam SMS campaign — EN/HI</span>
+              <span class="alert-time">45m ago</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CITIZEN PORTAL -->
+    <div class="tab-content" id="tab-citizen">
+      <div class="citizen-grid">
+        <div class="verify-panel">
+          <h3>🔍 Instant Fraud Verification</h3>
+          <div class="type-pills">
+            <button class="type-pill selected" onclick="selectPill(this)">📞 Phone</button>
+            <button class="type-pill" onclick="selectPill(this)">💳 UPI ID</button>
+            <button class="type-pill" onclick="selectPill(this)">🌐 Website</button>
+            <button class="type-pill" onclick="selectPill(this)">📷 QR Code</button>
+            <button class="type-pill" onclick="selectPill(this)">🏦 Bank Acc.</button>
+            <button class="type-pill" onclick="selectPill(this)">📧 Email</button>
+          </div>
+          <div class="input-group">
+            <label>Enter phone number to verify</label>
+            <input class="sentinel-input" placeholder="9876543210" id="verify-input" type="text"/>
+          </div>
+          <button class="btn-primary" style="width:100%;padding:.75rem" onclick="runVerification()">
+            🔍 Analyze with AI
+          </button>
+          <div style="margin-top:1rem;padding:.75rem;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;font-size:.8rem;color:var(--text-secondary)">
+            📞 <strong style="color:var(--accent-red)">Emergency Helpline: 1930</strong><br/>
+            National Cyber Crime Portal: cybercrime.gov.in
+          </div>
+          <div style="margin-top:.75rem">
+            <div class="feature-row">
+              <span class="feature-name">📱 Audio Recording</span>
+              <button class="btn-outline" style="font-size:.72rem;padding:.25rem .6rem">Upload</button>
+            </div>
+            <div class="feature-row">
+              <span class="feature-name">📸 Screenshot</span>
+              <button class="btn-outline" style="font-size:.72rem;padding:.25rem .6rem">Upload</button>
+            </div>
+            <div class="feature-row">
+              <span class="feature-name">📄 PDF Document</span>
+              <button class="btn-outline" style="font-size:.72rem;padding:.25rem .6rem">Upload</button>
+            </div>
+          </div>
+        </div>
+        <div class="result-panel" id="result-panel">
+          <h3>🧠 AI Analysis Result</h3>
+          <div style="text-align:center;padding:2rem 0" id="result-placeholder">
+            <div style="font-size:3rem;margin-bottom:.75rem">🔎</div>
+            <p style="color:var(--text-muted);font-size:.875rem">Enter a phone number, UPI ID, or URL to get instant AI-powered fraud risk analysis.</p>
+          </div>
+          <div id="result-content" style="display:none">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+              <div>
+                <div style="font-size:.8rem;color:var(--text-muted)">Risk Score</div>
+                <div style="font-size:2.5rem;font-weight:900;color:var(--accent-red)" id="risk-score-val">87</div>
+                <div id="risk-badge" style="display:inline-block;padding:.2rem .6rem;border-radius:6px;font-size:.75rem;font-weight:700;background:rgba(239,68,68,.2);color:var(--accent-red)">HIGH RISK</div>
+              </div>
+              <div style="text-align:right">
+                <canvas id="riskGauge" width="120" height="70"></canvas>
+              </div>
+            </div>
+            <div style="padding:.75rem;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;font-size:.8rem;margin-bottom:1rem">
+              ⚠️ <strong>This number is linked to 7 fraud complaints.</strong> Do NOT call back or share any personal information. Report immediately.
+            </div>
+            <div>
+              <div class="feature-row">
+                <span class="feature-name">🔊 Reported as Scam</span>
+                <div style="display:flex;align-items:center;gap:.5rem">
+                  <span class="feature-score" style="color:var(--accent-red)">94%</span>
+                  <div class="score-bar"><div class="score-fill score-bad" style="width:94%"></div></div>
+                </div>
+              </div>
+              <div class="feature-row">
+                <span class="feature-name">🕸️ Network Risk</span>
+                <div style="display:flex;align-items:center;gap:.5rem">
+                  <span class="feature-score" style="color:var(--accent-orange)">78%</span>
+                  <div class="score-bar"><div class="score-fill score-warn" style="width:78%"></div></div>
+                </div>
+              </div>
+              <div class="feature-row">
+                <span class="feature-name">🤖 AI Model Confidence</span>
+                <div style="display:flex;align-items:center;gap:.5rem">
+                  <span class="feature-score" style="color:var(--accent-cyan)">91%</span>
+                  <div class="score-bar"><div class="score-fill score-bad" style="width:91%"></div></div>
+                </div>
+              </div>
+              <div class="feature-row">
+                <span class="feature-name">📋 Connected Cases</span>
+                <span class="feature-score" style="color:var(--accent-red)">7 cases</span>
+              </div>
+            </div>
+            <button class="btn-primary" style="width:100%;padding:.7rem;margin-top:1rem" onclick="alert('Redirecting to cybercrime.gov.in...')">
+              📋 File Complaint Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CRIME MAP -->
+    <div class="tab-content" id="tab-map">
+      <div style="display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:start">
+        <div>
+          <div id="crime-map"></div>
+        </div>
+        <div style="width:220px">
+          <div class="cc-chart-card" style="margin-bottom:1rem">
+            <div class="cc-chart-title">State Risk Index</div>
+            <canvas id="stateRiskChart" height="200"></canvas>
+          </div>
+          <div class="cc-chart-card">
+            <div class="cc-chart-title">Scam Types</div>
+            <canvas id="scamTypeChart" height="160"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BANK DASHBOARD -->
+    <div class="tab-content" id="tab-bank">
+      <div class="cc-layout" style="margin-bottom:1rem">
+        <div class="cc-card">
+          <div class="cc-card-top"><span class="cc-label">Flagged Txns Today</span><span class="cc-icon">⚠️</span></div>
+          <div class="cc-value" style="color:var(--accent-orange)">234</div>
+          <div class="cc-delta up">↑ 12 pending review</div>
+        </div>
+        <div class="cc-card">
+          <div class="cc-card-top"><span class="cc-label">Mule Accounts</span><span class="cc-icon">🧊</span></div>
+          <div class="cc-value" style="color:var(--accent-red)">18</div>
+          <div class="cc-delta up">Recommend freeze</div>
+        </div>
+        <div class="cc-card">
+          <div class="cc-card-top"><span class="cc-label">Counterfeit Notes</span><span class="cc-icon">💵</span></div>
+          <div class="cc-value" style="color:var(--accent-purple)">7</div>
+          <div class="cc-delta up">Reported this week</div>
+        </div>
+        <div class="cc-card">
+          <div class="cc-card-top"><span class="cc-label">Protected Amount</span><span class="cc-icon">🛡️</span></div>
+          <div class="cc-value" style="color:var(--accent-green)">₹1.8Cr</div>
+          <div class="cc-delta down">Blocked today</div>
+        </div>
+      </div>
+      <div class="cc-grid2">
+        <div class="cc-chart-card">
+          <div class="cc-chart-title">Transaction Risk Distribution</div>
+          <canvas id="txnRiskChart" height="180"></canvas>
+        </div>
+        <div class="cc-chart-card">
+          <div class="cc-chart-title">High-Risk Transaction Queue</div>
+          <div class="alert-feed">
+            <div class="alert-item critical">
+              <span class="alert-badge critical">BLOCK</span>
+              <span>ACC****5678 → ****2341 ₹1,50,000</span>
+              <span class="alert-time">Score: 94</span>
+            </div>
+            <div class="alert-item high">
+              <span class="alert-badge high">REVIEW</span>
+              <span>ACC****3421 → ****8765 ₹85,000</span>
+              <span class="alert-time">Score: 79</span>
+            </div>
+            <div class="alert-item high">
+              <span class="alert-badge high">REVIEW</span>
+              <span>ACC****9012 → ****4321 ₹2,50,000</span>
+              <span class="alert-time">Score: 76</span>
+            </div>
+            <div class="alert-item medium">
+              <span class="alert-badge medium">WATCH</span>
+              <span>UPI: suspect@paytm ₹25,000</span>
+              <span class="alert-time">Score: 61</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FRAUD GRAPH -->
+    <div class="tab-content" id="tab-graph">
+      <div class="graph-container">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <div>
+            <h3 style="font-size:1rem">🕸️ Fraud Ring: RING-2024-MH-001</h3>
+            <p style="font-size:.8rem;color:var(--text-muted)">47 nodes · 83 edges · ₹47.5L at risk · Maharashtra/Gujarat/Rajasthan</p>
+          </div>
+          <div style="display:flex;gap:.5rem">
+            <button class="btn-outline" style="font-size:.75rem;padding:.4rem .8rem">📄 Court Report</button>
+            <button class="btn-primary" style="font-size:.75rem;padding:.4rem .8rem">🚨 Escalate</button>
+          </div>
+        </div>
+        <canvas id="fraud-graph-canvas"></canvas>
+        <div style="display:flex;gap:1.5rem;margin-top:.75rem;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--text-muted)">
+            <div style="width:10px;height:10px;border-radius:50%;background:#ef4444"></div>Fraud Actor
+          </div>
+          <div style="display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--text-muted)">
+            <div style="width:10px;height:10px;border-radius:50%;background:#f59e0b"></div>Phone Number
+          </div>
+          <div style="display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--text-muted)">
+            <div style="width:10px;height:10px;border-radius:50%;background:#8b5cf6"></div>Bank Account
+          </div>
+          <div style="display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--text-muted)">
+            <div style="width:10px;height:10px;border-radius:50%;background:#10b981"></div>UPI ID
+          </div>
+          <div style="display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--text-muted)">
+            <div style="width:10px;height:10px;border-radius:50%;background:#94a3b8"></div>Victim
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ CURRENCY SCANNER ═════════════ -->
+<section style="background:rgba(13,21,38,0.5)">
+  <div class="section-header">
+    <div class="section-tag">KAVACH-CURRENCY</div>
+    <h2>Counterfeit Currency <span style="color:var(--accent-orange)">AI Scanner</span></h2>
+    <p>Multi-model ensemble verifies 7 security features simultaneously — any citizen can scan a note in seconds.</p>
+  </div>
+  <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+    <div class="cc-chart-card">
+      <h3 style="font-size:1rem;margin-bottom:1rem">📷 Scan Currency Note</h3>
+      <div style="border:2px dashed var(--border);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:.2s;background:rgba(0,0,0,0.2)" onmouseover="this.style.borderColor='var(--accent-cyan)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:3rem;margin-bottom:.75rem">📸</div>
+        <p style="color:var(--text-muted);font-size:.875rem;margin-bottom:1rem">Take a photo or upload image of your currency note</p>
+        <button class="btn-primary" onclick="runCurrencyScan()">Upload Image / Scan</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:1rem">
+        <div style="padding:.6rem;background:rgba(255,255,255,0.03);border-radius:8px;font-size:.75rem;color:var(--text-muted);text-align:center">✅ ₹100</div>
+        <div style="padding:.6rem;background:rgba(255,255,255,0.03);border-radius:8px;font-size:.75rem;color:var(--text-muted);text-align:center">✅ ₹200</div>
+        <div style="padding:.6rem;background:rgba(255,255,255,0.03);border-radius:8px;font-size:.75rem;color:var(--text-muted);text-align:center">✅ ₹500</div>
+        <div style="padding:.6rem;background:rgba(255,255,255,0.03);border-radius:8px;font-size:.75rem;color:var(--text-muted);text-align:center">✅ ₹2000</div>
+      </div>
+    </div>
+    <div class="cc-chart-card" id="currency-result">
+      <h3 style="font-size:1rem;margin-bottom:1rem">🧠 Feature Analysis</h3>
+      <div id="currency-placeholder" style="text-align:center;padding:2rem 0">
+        <div style="font-size:2.5rem;margin-bottom:.75rem">💵</div>
+        <p style="color:var(--text-muted);font-size:.85rem">Upload a currency image to see the AI security feature analysis</p>
+      </div>
+      <div id="currency-analysis" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding:.75rem;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px">
+          <div>
+            <div style="font-size:.75rem;color:var(--text-muted)">Verdict</div>
+            <div style="font-size:1.1rem;font-weight:800;color:var(--accent-red)">⚠️ COUNTERFEIT</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:.75rem;color:var(--text-muted)">Confidence</div>
+            <div style="font-size:1.25rem;font-weight:700;color:var(--accent-red)">98.3%</div>
+          </div>
+        </div>
+        <div id="features-list"></div>
+        <button class="btn-primary" style="width:100%;padding:.65rem;margin-top:.75rem;font-size:.85rem">
+          📋 Report to Police / RBI
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ WORKFLOW ══════════════════ -->
+<section id="workflow">
+  <div class="section-header">
+    <div class="section-tag">How KAVACH-AGENT Works</div>
+    <h2>Autonomous AI <span style="color:var(--accent-cyan)">Response Pipeline</span></h2>
+    <p>From citizen report to law enforcement action in under 5 minutes — zero human intervention required.</p>
+  </div>
+  <div class="workflow">
+    <div class="wf-step">
+      <div class="wf-icon">📲</div>
+      <div class="wf-label">Citizen reports via App/WhatsApp/IVR/1930</div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-icon">🔊</div>
+      <div class="wf-label">KAVACH-VOICE analyzes audio/text</div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-icon">🕸️</div>
+      <div class="wf-label">KAVACH-NET maps fraud network graph</div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-icon">🔮</div>
+      <div class="wf-label">KAVACH-PREDICT scores transaction risk</div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-icon">🧠</div>
+      <div class="wf-label">KAVACH-AGENT synthesizes & dispatches alerts</div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-icon">🚨</div>
+      <div class="wf-label">Bank freezes account · Telecom blocks number</div>
+    </div>
+    <div class="wf-step">
+      <div class="wf-icon">👮</div>
+      <div class="wf-label">Police receives AI brief + court-admissible report</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ CHATBOT ═══════════════════ -->
+<section id="chatbot" style="background:rgba(13,21,38,0.5)">
+  <div class="section-header">
+    <div class="section-tag">KAVACH-ASSIST</div>
+    <h2>Multilingual <span style="color:var(--accent-blue)">AI Safety Assistant</span></h2>
+    <p>Available in 12 Indian languages on WhatsApp, IVR, web, and mobile — guiding every citizen to safety.</p>
+  </div>
+  <div class="chatbot-wrapper">
+    <div class="chatbot-header">
+      <div class="bot-avatar">🤖</div>
+      <div>
+        <div style="font-weight:700;font-size:.9rem">KAVACH Assistant</div>
+        <div style="font-size:.75rem;color:var(--accent-green)">● Online · 12 Languages</div>
+      </div>
+    </div>
+    <div class="lang-selector">
+      <button class="lang-pill active" onclick="selectLang(this,'en')">English</button>
+      <button class="lang-pill" onclick="selectLang(this,'hi')">हिंदी</button>
+      <button class="lang-pill" onclick="selectLang(this,'ta')">தமிழ்</button>
+      <button class="lang-pill" onclick="selectLang(this,'te')">తెలుగు</button>
+      <button class="lang-pill" onclick="selectLang(this,'kn')">ಕನ್ನಡ</button>
+      <button class="lang-pill" onclick="selectLang(this,'ml')">മലയാളം</button>
+      <button class="lang-pill" onclick="selectLang(this,'bn')">বাংলা</button>
+      <button class="lang-pill" onclick="selectLang(this,'mr')">मराठी</button>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-msg bot">
+        <div class="msg-bubble">👋 Hello! I'm KAVACH Assistant. I can help you verify suspicious calls, check UPI IDs, report fraud, and guide you to safety. How can I help you today?</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:.4rem;padding:.5rem 1rem;border-top:1px solid var(--border)">
+      <button class="lang-pill" onclick="sendQuickMsg('Is this call from CBI genuine?')">Is this CBI call genuine?</button>
+      <button class="lang-pill" onclick="sendQuickMsg('Check UPI ID: suspect@paytm')">Check UPI ID</button>
+      <button class="lang-pill" onclick="sendQuickMsg('How do I report cybercrime?')">Report cybercrime</button>
+      <button class="lang-pill" onclick="sendQuickMsg('I received a digital arrest scam call')">Digital arrest scam help</button>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chat-input" placeholder="Type your message..." onkeydown="if(event.key==='Enter')sendChat()"/>
+      <button class="chat-send" onclick="sendChat()">➤</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ METRICS ═══════════════════ -->
+<section id="metrics">
+  <div class="section-header">
+    <div class="section-tag">AI Performance Metrics</div>
+    <h2>Production-Grade <span style="color:var(--accent-green)">AI Accuracy</span></h2>
+    <p>Every model benchmarked on real Indian fraud data. Explainability built-in for every prediction.</p>
+  </div>
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-icon cyan">🔊</div>
+      <div>
+        <div class="metric-value" style="color:var(--accent-cyan)">94.3%</div>
+        <div class="metric-name">Scam Text F1-Score</div>
+        <div class="metric-sub">IndicBERT + RoBERTa Ensemble</div>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon orange">💰</div>
+      <div>
+        <div class="metric-value" style="color:var(--accent-orange)">99.1%</div>
+        <div class="metric-name">Currency Detection Accuracy</div>
+        <div class="metric-sub">YOLOv11 + EfficientNet-B4</div>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon purple">🕸️</div>
+      <div>
+        <div class="metric-value" style="color:var(--accent-purple)">0.97</div>
+        <div class="metric-name">Fraud Network AUC-ROC</div>
+        <div class="metric-sub">GraphSAGE + GAT</div>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon green">⚡</div>
+      <div>
+        <div class="metric-value" style="color:var(--accent-green)">&lt;500ms</div>
+        <div class="metric-name">API P95 Latency</div>
+        <div class="metric-sub">Triton Inference Server</div>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon cyan">🔮</div>
+      <div>
+        <div class="metric-value" style="color:var(--accent-cyan)">96.4%</div>
+        <div class="metric-name">Transaction Fraud AUC</div>
+        <div class="metric-sub">XGBoost + LightGBM</div>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon red">🔊</div>
+      <div>
+        <div class="metric-value" style="color:var(--accent-red)">96.8%</div>
+        <div class="metric-name">Deepfake Voice Accuracy</div>
+        <div class="metric-sub">ECAPA-TDNN on ASVspoof 2021</div>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon green">📊</div>
+      <div>
+        <div class="metric-value" style="color:var(--accent-green)">&lt;3%</div>
+        <div class="metric-name">False Positive Rate</div>
+        <div class="metric-sub">Ensemble + Human Review</div>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon purple">🧠</div>
+      <div>
+        <div class="metric-value" style="color:var(--accent-purple)">&lt;5min</div>
+        <div class="metric-name">Autonomous Alert Response</div>
+        <div class="metric-sub">KAVACH-AGENT pipeline</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analytics Chart -->
+  <div style="max-width:900px;margin:3rem auto 0;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+    <div class="cc-chart-card">
+      <div class="cc-chart-title">Monthly Fraud Detections (2024)</div>
+      <canvas id="monthlyChart" height="200"></canvas>
+    </div>
+    <div class="cc-chart-card">
+      <div class="cc-chart-title">Scam Category Breakdown</div>
+      <canvas id="categoryChart" height="200"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ TECH STACK ════════════════ -->
+<section style="background:rgba(13,21,38,0.5)">
+  <div class="section-header">
+    <div class="section-tag">Technology Stack</div>
+    <h2>Enterprise-Grade <span style="color:var(--accent-purple)">Open Source</span> Stack</h2>
+    <p>Built on battle-tested open-source tools — enterprise quality at zero license cost.</p>
+  </div>
+  <div class="tech-grid">
+    <div class="tech-card"><div class="tech-icon">⚛️</div><div class="tech-name">Next.js 14</div><div class="tech-type">Frontend Framework</div></div>
+    <div class="tech-card"><div class="tech-icon">🐍</div><div class="tech-name">FastAPI</div><div class="tech-type">Backend API</div></div>
+    <div class="tech-card"><div class="tech-icon">🔥</div><div class="tech-name">PyTorch</div><div class="tech-type">Deep Learning</div></div>
+    <div class="tech-card"><div class="tech-icon">🤗</div><div class="tech-name">Hugging Face</div><div class="tech-type">Model Hub</div></div>
+    <div class="tech-card"><div class="tech-icon">🐘</div><div class="tech-name">PostgreSQL 15</div><div class="tech-type">Primary Database</div></div>
+    <div class="tech-card"><div class="tech-icon">🕸️</div><div class="tech-name">Neo4j 5</div><div class="tech-type">Graph Database</div></div>
+    <div class="tech-card"><div class="tech-icon">📦</div><div class="tech-name">Apache Kafka</div><div class="tech-type">Event Streaming</div></div>
+    <div class="tech-card"><div class="tech-icon">🔴</div><div class="tech-name">Redis 7</div><div class="tech-type">Cache & Sessions</div></div>
+    <div class="tech-card"><div class="tech-icon">🔍</div><div class="tech-name">Elasticsearch</div><div class="tech-type">Search & Analytics</div></div>
+    <div class="tech-card"><div class="tech-icon">🐳</div><div class="tech-name">Docker + K8s</div><div class="tech-type">Deployment</div></div>
+    <div class="tech-card"><div class="tech-icon">🗺️</div><div class="tech-name">Leaflet.js</div><div class="tech-type">GIS Mapping</div></div>
+    <div class="tech-card"><div class="tech-icon">📊</div><div class="tech-name">MLflow</div><div class="tech-type">MLOps Tracking</div></div>
+  </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ════════════════════ -->
+<footer>
+  <div class="sos-strip">
+    🚨 Received a suspicious call? <strong>Call 1930 immediately</strong> (National Cyber Crime Helpline) · Report at <strong>cybercrime.gov.in</strong>
+  </div>
+  <div class="footer-logo"><span>Sentinel</span>AI</div>
+  <div class="footer-sub">National Digital Public Safety Intelligence Platform · Smart India Hackathon 2024</div>
+  <div class="footer-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Use</a>
+    <a href="#">API Documentation</a>
+    <a href="#">Research Paper</a>
+    <a href="#">GitHub</a>
+    <a href="#">Contact</a>
+  </div>
+  <div class="footer-copy">
+    Built for Ministry of Home Affairs / I4C · © 2024 SentinelAI Team · Powered by open-source AI
+  </div>
+</footer>
+
+<!-- ═══════════════════ LOGIN MODAL ═══════════════ -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title">Access SentinelAI</div>
+    <div class="modal-sub">Select your role to get started</div>
+    <div class="role-grid">
+      <button class="role-card selected" onclick="selectRole(this)" id="role-citizen">
+        <span class="r-icon">👥</span>
+        <span class="r-name">Citizen</span>
+      </button>
+      <button class="role-card" onclick="selectRole(this)" id="role-police">
+        <span class="r-icon">👮</span>
+        <span class="r-name">Police Officer</span>
+      </button>
+      <button class="role-card" onclick="selectRole(this)" id="role-bank">
+        <span class="r-icon">🏦</span>
+        <span class="r-name">Bank Officer</span>
+      </button>
+      <button class="role-card" onclick="selectRole(this)" id="role-telecom">
+        <span class="r-icon">📡</span>
+        <span class="r-name">Telecom Operator</span>
+      </button>
+      <button class="role-card" onclick="selectRole(this)" id="role-admin" style="grid-column:span 2">
+        <span class="r-icon">🔐</span>
+        <span class="r-name">Administrator</span>
+      </button>
+    </div>
+    <div class="input-group">
+      <label>ID / Badge / Employee Number</label>
+      <input class="sentinel-input" placeholder="Enter your credentials"/>
+    </div>
+    <div class="input-group">
+      <label>OTP (Sent to registered mobile)</label>
+      <input class="sentinel-input" placeholder="6-digit OTP" maxlength="6"/>
+    </div>
+    <button class="btn-primary" style="width:100%;padding:.8rem;font-size:.95rem" onclick="loginDemo()">
+      🔐 Authenticate & Enter
+    </button>
+    <div style="margin-top:.75rem;font-size:.75rem;color:var(--text-muted);text-align:center">
+      Protected by Keycloak OAuth2 · JWT RS256 · AES-256 Encrypted
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SCRIPTS ═══════════════════ -->
+<script>
+// ── Animated Counters ──────────────────────────────
+function animateCounter(el, target, prefix='', suffix='', duration=2000) {
+  let start = 0;
+  const step = target / (duration / 16);
+  const timer = setInterval(() => {
+    start += step;
+    if (start >= target) { start = target; clearInterval(timer); }
+    const val = Math.floor(start);
+    el.textContent = prefix + (val >= 1000000 ? (val/100000).toFixed(1)+'L' : val >= 1000 ? (val/1000).toFixed(0)+'K' : val) + suffix;
+  }, 16);
+}
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    animateCounter(document.getElementById('c1'), 1140000, '', '');
+    animateCounter(document.getElementById('c2'), 1776, '₹', 'Cr');
+    animateCounter(document.getElementById('c3'), 12000, '', '+');
+    animateCounter(document.getElementById('c4'), 30, '<', 's');
+  }, 500);
+});
+
+// ── Modal ──────────────────────────────────────────
+function openModal() { document.getElementById('modal').classList.add('open'); }
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function selectRole(btn) {
+  document.querySelectorAll('.role-card').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+function loginDemo() {
+  closeModal();
+  setTimeout(() => alert('✅ Authentication successful!\n\nIn the full platform, you would be redirected to your role-specific dashboard with live AI data.\n\nSee the Dashboards section above for a preview.'), 300);
+}
+
+// ── Tab switching ──────────────────────────────────
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'map') setTimeout(initMap, 100);
+  if (id === 'graph') setTimeout(drawFraudGraph, 100);
+}
+
+// ── Pill selectors ─────────────────────────────────
+function selectPill(btn) {
+  btn.closest('.type-pills').querySelectorAll('.type-pill').forEach(p => p.classList.remove('selected'));
+  btn.classList.add('selected');
+  const types = { '📞 Phone':'Enter phone number to verify','💳 UPI ID':'Enter UPI ID (e.g. name@bank)','🌐 Website':'Enter URL (e.g. https://...)','📷 QR Code':'Upload QR code image','🏦 Bank Acc.':'Enter bank account number','📧 Email':'Enter email address' };
+  const input = document.getElementById('verify-input');
+  input.placeholder = types[btn.textContent.trim()] || 'Enter value to verify';
+}
+
+// ── Verification demo ──────────────────────────────
+function runVerification() {
+  const val = document.getElementById('verify-input').value;
+  if (!val.trim()) { alert('Please enter a value to verify.'); return; }
+  document.getElementById('result-placeholder').style.display = 'none';
+  document.getElementById('result-content').style.display = 'block';
+  drawRiskGauge(87);
+}
+function drawRiskGauge(score) {
+  const c = document.getElementById('riskGauge');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,120,70);
+  const cx=60, cy=65, r=50;
+  ctx.beginPath(); ctx.arc(cx,cy,r,Math.PI,0); ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=10; ctx.stroke();
+  const angle = Math.PI + (score/100)*Math.PI;
+  const grad = ctx.createLinearGradient(10,cy,110,cy);
+  grad.addColorStop(0,'#10b981'); grad.addColorStop(0.5,'#f59e0b'); grad.addColorStop(1,'#ef4444');
+  ctx.beginPath(); ctx.arc(cx,cy,r,Math.PI,angle); ctx.strokeStyle=grad; ctx.lineWidth=10; ctx.stroke();
+  ctx.fillStyle='#f1f5f9'; ctx.font='bold 16px Inter'; ctx.textAlign='center';
+  ctx.fillText(score, cx, cy-8);
+}
+
+// ── Currency scan demo ─────────────────────────────
+function runCurrencyScan() {
+  document.getElementById('currency-placeholder').style.display='none';
+  document.getElementById('currency-analysis').style.display='block';
+  const features = [
+    {name:'🔒 Security Thread', score:12, status:'fake'},
+    {name:'🌊 Watermark', score:18, status:'fake'},
+    {name:'🔢 Serial Number', score:31, status:'warn'},
+    {name:'☀️ UV Features', score:9, status:'fake'},
+    {name:'🖼️ Latent Image', score:15, status:'fake'},
+    {name:'🧵 Paper Texture', score:22, status:'warn'},
+  ];
+  const c = document.getElementById('features-list');
+  c.innerHTML = features.map(f => `
+    <div class="feature-row">
+      <span class="feature-name">${f.name}</span>
+      <div style="display:flex;align-items:center;gap:.5rem">
+        <span class="feature-score" style="color:${f.status==='fake'?'var(--accent-red)':f.status==='warn'?'var(--accent-orange)':'var(--accent-green)'}">${f.score}%</span>
+        <div class="score-bar"><div class="score-fill score-${f.status}" style="width:${f.score}%"></div></div>
+      </div>
+    </div>`).join('');
+}
+
+// ── Chatbot ────────────────────────────────────────
+const chatResponses = {
+  en: {
+    'digital arrest': '🚨 This is a SCAM! The CBI/Police NEVER arrest you digitally or demand money over phone. Hang up immediately. Call 1930 to report.',
+    'upi': '⚠️ I\'ll check that UPI ID right now... This UPI ID is linked to 3 fraud complaints. Do NOT send money. Report at cybercrime.gov.in',
+    'report': '📋 To report cybercrime: 1) Call 1930 (National Helpline) 2) Visit cybercrime.gov.in 3) Use this app\'s complaint portal. I can help fill the form!',
+    'genuine': '🔍 Let me verify... CBI/Police never call to demand money or threaten arrest digitally. This is almost certainly a scam. Hang up and call 1930.',
+    'default': '🤖 I understand your concern. Could you share more details? Is someone threatening you or demanding money? Please call 1930 if you feel unsafe.'
+  },
+  hi: {
+    'default': '🤖 नमस्ते! मैं आपकी मदद के लिए यहाँ हूं। क्या आपको कोई संदिग्ध कॉल आई है? कृपया 1930 पर कॉल करें यदि आप असुरक्षित महसूस करते हैं।',
+    'digital': '🚨 यह एक स्कैम है! CBI/पुलिस कभी फोन पर पैसे नहीं माँगते। तुरंत फोन काटें और 1930 पर रिपोर्ट करें।'
+  },
+  ta: { 'default': '🤖 வணக்கம்! நான் உங்களுக்கு உதவ இங்கே இருக்கிறேன். ஏதேனும் சந்தேகமான அழைப்பு வந்தால் 1930 அழைக்கவும்.' },
+  te: { 'default': '🤖 నమస్కారం! నేను మీకు సహాయం చేయడానికి ఇక్కడ ఉన్నాను. అనుమానాస్పద కాల్ వస్తే 1930కి కాల్ చేయండి.' },
+  kn: { 'default': '🤖 ನಮಸ್ಕಾರ! ನಿಮಗೆ ಸಹಾಯ ಮಾಡಲು ನಾನು ಇಲ್ಲಿದ್ದೇನೆ. ಯಾವುದೇ ಅನುಮಾನಾಸ್ಪದ ಕರೆ ಬಂದರೆ 1930 ಗೆ ಕರೆ ಮಾಡಿ.' },
+  ml: { 'default': '🤖 നമസ്കാരം! ഞാൻ നിങ്ങളെ സഹായിക്കാൻ ഇവിടെ ഉണ്ട്. സംശയാസ്പദമായ ഏതെങ്കിലും കോൾ വന്നാൽ 1930 ൽ വിളിക്കുക.' },
+  bn: { 'default': '🤖 নমস্কার! আমি আপনাকে সাহায্য করতে এখানে আছি। কোনো সন্দেহজনক কল পেলে 1930 এ ফোন করুন।' },
+  mr: { 'default': '🤖 नमस्कार! मी तुम्हाला मदत करण्यासाठी येथे आहे. कोणताही संशयास्पद कॉल आल्यास 1930 वर कॉल करा.' }
+};
+let currentLang = 'en';
+function selectLang(btn, lang) {
+  document.querySelectorAll('.lang-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  currentLang = lang;
+}
+function sendQuickMsg(msg) {
+  document.getElementById('chat-input').value = msg;
+  sendChat();
+}
+function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  appendMsg(msg, 'user');
+  input.value = '';
+  setTimeout(() => {
+    const langResponses = chatResponses[currentLang] || chatResponses.en;
+    let reply = langResponses.default;
+    const lower = msg.toLowerCase();
+    for (const [key, val] of Object.entries(chatResponses.en)) {
+      if (key !== 'default' && lower.includes(key)) { reply = val; break; }
+    }
+    appendMsg(reply, 'bot');
+  }, 800);
+}
+function appendMsg(text, role) {
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = `chat-msg ${role}`;
+  div.innerHTML = `<div class="msg-bubble">${text}</div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+// ── Charts ─────────────────────────────────────────
+const chartDefaults = {
+  plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
+  scales: {
+    x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b', font: { size: 10 } } },
+    y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b', font: { size: 10 } } }
+  }
+};
+
+window.addEventListener('load', () => {
+  // Fraud trend chart
+  new Chart(document.getElementById('fraudTrendChart'), {
+    type: 'line',
+    data: {
+      labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      datasets: [{
+        label: 'Digital Arrest', data: [120,145,132,178,165,142,189],
+        borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', tension: 0.4, fill: true
+      },{
+        label: 'Network Fraud', data: [80,95,88,110,102,91,124],
+        borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.1)', tension: 0.4, fill: true
+      },{
+        label: 'Counterfeit', data: [12,8,15,10,9,14,11],
+        borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', tension: 0.4, fill: true
+      }]
+    },
+    options: { ...chartDefaults, responsive: true, maintainAspectRatio: false }
+  });
+
+  // Monthly chart
+  new Chart(document.getElementById('monthlyChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      datasets: [{
+        label: 'Cases Detected',
+        data: [8420,9100,8750,11200,12800,14500,13900,16200,15400,17800,19200,21000],
+        backgroundColor: 'rgba(0,212,255,0.6)', borderColor: '#00d4ff', borderWidth: 1, borderRadius: 4
+      }]
+    },
+    options: { ...chartDefaults, responsive: true, maintainAspectRatio: false }
+  });
+
+  // Category donut
+  new Chart(document.getElementById('categoryChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Digital Arrest','Bank Fraud','Investment Scam','Lottery','Phishing','Counterfeit'],
+      datasets: [{ data: [34,22,18,12,9,5], backgroundColor: ['#ef4444','#3b82f6','#f59e0b','#8b5cf6','#10b981','#00d4ff'], borderWidth: 0 }]
+    },
+    options: { plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 }, padding: 12 } } }, maintainAspectRatio: false }
+  });
+
+  // State risk chart
+  new Chart(document.getElementById('stateRiskChart'), {
+    type: 'bar',
+    data: {
+      labels: ['MH','DL','UP','KA','GJ','TN','RJ','WB'],
+      datasets: [{ label: 'Risk Score', data: [91,88,84,79,76,73,70,68], backgroundColor: ['#ef4444','#ef4444','#f59e0b','#f59e0b','#8b5cf6','#8b5cf6','#10b981','#10b981'], borderRadius: 4 }]
+    },
+    options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b', font: { size: 10 } } }, y: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } } }, maintainAspectRatio: false }
+  });
+
+  // Scam type pie
+  new Chart(document.getElementById('scamTypeChart'), {
+    type: 'pie',
+    data: {
+      labels: ['Digital Arrest','Bank Fraud','Phishing','Other'],
+      datasets: [{ data: [34,28,22,16], backgroundColor: ['#ef4444','#3b82f6','#8b5cf6','#10b981'], borderWidth: 0 }]
+    },
+    options: { plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 9 }, padding: 8 } } }, maintainAspectRatio: false }
+  });
+
+  // Transaction risk chart
+  new Chart(document.getElementById('txnRiskChart'), {
+    type: 'bar',
+    data: {
+      labels: ['<20','20-40','40-60','60-80','80-100'],
+      datasets: [{ label: 'Transaction Count', data: [12400,3200,890,234,47], backgroundColor: ['#10b981','#3b82f6','#f59e0b','#ef4444','#dc2626'], borderRadius: 4 }]
+    },
+    options: { ...chartDefaults, responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 } } } } }
+  });
+});
+
+// ── Crime Map (Leaflet) ────────────────────────────
+let mapInit = false;
+function initMap() {
+  if (mapInit) return;
+  mapInit = true;
+  const map = L.map('crime-map', { zoomControl: true }).setView([20.5937, 78.9629], 5);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap contributors © CARTO', maxZoom: 19
+  }).addTo(map);
+  const crimes = [
+    {lat:19.0760,lng:72.8777,type:'digital_arrest',risk:'critical',city:'Mumbai'},
+    {lat:28.6139,lng:77.2090,type:'phishing',risk:'high',city:'Delhi'},
+    {lat:12.9716,lng:77.5946,type:'investment_scam',risk:'high',city:'Bengaluru'},
+    {lat:17.3850,lng:78.4867,type:'digital_arrest',risk:'critical',city:'Hyderabad'},
+    {lat:13.0827,lng:80.2707,type:'bank_fraud',risk:'medium',city:'Chennai'},
+    {lat:22.5726,lng:88.3639,type:'lottery_scam',risk:'medium',city:'Kolkata'},
+    {lat:23.0225,lng:72.5714,type:'digital_arrest',risk:'high',city:'Ahmedabad'},
+    {lat:26.9124,lng:75.7873,type:'phishing',risk:'medium',city:'Jaipur'},
+    {lat:18.5204,lng:73.8567,type:'digital_arrest',risk:'high',city:'Pune'},
+    {lat:25.5941,lng:85.1376,type:'bank_fraud',risk:'critical',city:'Patna'},
+  ];
+  const cols = { critical:'#ef4444', high:'#f59e0b', medium:'#8b5cf6', low:'#10b981' };
+  crimes.forEach(c => {
+    const circle = L.circleMarker([c.lat, c.lng], {
+      radius: c.risk==='critical'?14:c.risk==='high'?10:7,
+      fillColor: cols[c.risk], color: cols[c.risk], weight: 2, opacity: 0.9, fillOpacity: 0.5
+    }).addTo(map);
+    circle.bindPopup(`<div style="color:#000"><strong>${c.city}</strong><br>Type: ${c.type}<br>Risk: <span style="color:${cols[c.risk]};font-weight:bold">${c.risk.toUpperCase()}</span></div>`);
+  });
+}
+
+// ── Fraud Graph Canvas ─────────────────────────────
+function drawFraudGraph() {
+  const canvas = document.getElementById('fraud-graph-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  canvas.height = 360;
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const nodes = [
+    {x:W/2, y:H/2, r:18, color:'#ef4444', label:'Actor 1', type:'actor'},
+    {x:W/2-120,y:H/2-80,r:12,color:'#f59e0b',label:'9876****10',type:'phone'},
+    {x:W/2+130,y:H/2-70,r:12,color:'#f59e0b',label:'8765****09',type:'phone'},
+    {x:W/2-160,y:H/2+60,r:12,color:'#8b5cf6',label:'****5678',type:'bank'},
+    {x:W/2+140,y:H/2+80,r:12,color:'#8b5cf6',label:'****2341',type:'bank'},
+    {x:W/2,y:H/2-140,r:12,color:'#10b981',label:'fraud@upi',type:'upi'},
+    {x:W/2-200,y:H/2,r:8,color:'#94a3b8',label:'Victim 1',type:'victim'},
+    {x:W/2+200,y:H/2,r:8,color:'#94a3b8',label:'Victim 2',type:'victim'},
+    {x:W/2-80,y:H/2+130,r:8,color:'#94a3b8',label:'Victim 3',type:'victim'},
+    {x:W/2-50,y:H/2-100,r:10,color:'#ef4444',label:'Actor 2',type:'actor'},
+    {x:W/2+60,y:H/2+120,r:10,color:'#ef4444',label:'Actor 3',type:'actor'},
+  ];
+
+  const edges = [[0,1],[0,2],[0,3],[0,4],[0,5],[0,9],[0,10],[1,6],[2,7],[3,8],[9,1],[10,4],[5,3],[5,4]];
+
+  // Draw edges
+  edges.forEach(([a,b]) => {
+    ctx.beginPath();
+    ctx.moveTo(nodes[a].x, nodes[a].y);
+    ctx.lineTo(nodes[b].x, nodes[b].y);
+    ctx.strokeStyle = 'rgba(0,212,255,0.25)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  });
+
+  // Draw nodes
+  nodes.forEach(n => {
+    // Glow
+    ctx.shadowColor = n.color;
+    ctx.shadowBlur = 15;
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
+    ctx.fillStyle = n.color + '40';
+    ctx.fill();
+    ctx.strokeStyle = n.color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+    // Label
+    ctx.fillStyle = '#f1f5f9';
+    ctx.font = `${n.r < 10 ? 9 : 10}px Inter`;
+    ctx.textAlign = 'center';
+    ctx.fillText(n.label, n.x, n.y + n.r + 14);
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "sentinelai-monolith",
+  "version": "1.0.0",
+  "description": "Consolidated SentinelAI Platform Developer Workspace (No Docker)",
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:frontend": "cd frontend && npm run build",
+    "start:frontend": "cd frontend && npm start",
+    "dev:backend": ".\\venv\\Scripts\\python.exe -m uvicorn backend.main:app --reload --port 8000",
+    "seed:db": ".\\venv\\Scripts\\python.exe database/seed_data.py"
+  },
+  "keywords": [
+    "FastAPI",
+    "Next.js",
+    "PostgreSQL",
+    "Neo4j",
+    "Smart India Hackathon",
+    "Public Safety"
+  ],
+  "author": "Smart India Hackathon Team"
+}
