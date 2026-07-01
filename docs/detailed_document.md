@@ -28,8 +28,9 @@ ET AI/
 │   ├── schema.sql            # Core SQL Schemas (optimized for SQLite & PostgreSQL compatibility)
 │   └── seed_data.py          # Automatic seeding script for demo database records
 ├── docs/
-│   ├── detailed_document.md  # Detailed system architectural guide (Markdown)
-│   └── detailed_document.pdf # Detailed system architectural guide (PDF)
+│   ├── detailed_document.md         # Detailed system architectural guide (Markdown)
+│   ├── detailed_document.pdf        # Detailed system architectural guide (PDF)
+│   └── sentinelai_presentation.pptx # Project presentation slide deck (PowerPoint PPTX)
 ├── backend/
 │   ├── main.py               # Main FastAPI server entry point (configures CORS & mounts routes)
 │   ├── config.py             # Settings controller reading environment configurations
